@@ -20,8 +20,8 @@ class class1(tk.Tk):
 
     # Starting server
     def start_server(self):
-        server.daemon = True # close the Server when the main thread (GUI) exits
-        server.start()       # start the thread
+        server.daemon = True # Szerver bezárása a főszál (GUI) leállásakor
+        server.start()       # szál indítása
         print("Server started...")
 
 # Creating Server
