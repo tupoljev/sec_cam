@@ -24,10 +24,10 @@ Tudni kell a Pi IP címét. (Van lehetőség távoli asztal, azaz RDP csatlakoz�
 
 ### A szoftver
 Python 3-ban írtunk egy szerver és egy kliens .py kiterjesztésű programot.
-Szükség volt a matplotlib, valamint a PIL modulok installálására is.
-* Windows: python -m pip install matplotlib
-* Linux: sudo apt python3 -m pip install matplotlib
+Szükség volt a matplotlib, valamint a Pillow modulok installálására is.
+* Windows: python -m pip install matplotlib (ill. Pillow)
+* Linux: sudo apt python3 -m pip install matplotlib (ill. Pillow)
 
-Először a server.py fájlt kell elindítani azon a gépen, amelyen az élő képet szeretnénk megtekinteni.
+Először a server.py fájlt kell elindítani azon a gépen, amelyen az élő képet szeretnénk megtekinteni. (python3 camserver.py)
 Ez a szerver létrehoz egy socket-et (IP cím + port), amelyen keresztül a kliens a későbbiekben csatlakozni tud.
-A kliens maga a Pi lesz ebben az esetben.
+A kliens maga a Pi lesz ebben az esetben, az küldi a szerver számára az élő képet. (python3 camclient.py)

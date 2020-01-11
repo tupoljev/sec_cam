@@ -6,23 +6,64 @@ import PIL.Image
 import matplotlib.pyplot as pl
 from tkinter import ttk
 from threading import Thread
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
+from os.path import basename
 
 class class1(tk.Tk):
+
     def __init__(self):
         super().__init__()
         # Init GUI
         self.title("Camera Server")
-        self.geometry('250x30')
-        self.set_button = ttk.Button(self, text='Start server', command=self.start_server)
-        self.set_button.grid(row=2, column=0, columnspan=1)    # Start server
-        self.set_button = ttk.Button(self, text='Exit', command=exit)
-        self.set_button.grid(row=2, column=3, columnspan=1)    # Exit program
+        self.geometry('280x60+250+250')
+        global entr
+        entr = tk.Entry(self)
+        entr.grid(row=1, column=0)
+        start_button = ttk.Button(self, text='Start server', width=20, command=self.start_server)
+        start_button.grid(row=2, column=0, columnspan=1)    # Start server
+        send_button = ttk.Button(self, text='Send pictures', command=self.send_pictures)
+        send_button.grid(row=1, column=1, columnspan=1)    # Send pictures
+        exit_button = ttk.Button(self, text='Exit', width=11, command=exit)
+        exit_button.grid(row=2, column=1, columnspan=1)    # Exit program 
 
     # Starting server
     def start_server(self):
         server.daemon = True # Szerver bezárása a főszál (GUI) leállásakor
         server.start()       # szál indítása
         print("Server started...")
+    
+    def send_pictures(self):
+        send_from = username = 'soziparon@gmail.com'
+        password = 'sze54mikro12'
+        send_to = entr.get()
+        files = ['../pictures/picture.jpg']
+
+        msg = MIMEMultipart()
+        msg['From'] = send_from
+        msg['To'] = ', '.join(send_to)  
+        msg['Subject'] = 'Pi Projekt teszt'
+        text = "Ez egy próba email, amelyet a Pi-hez írt programmal küldünk el."
+        msg.attach(MIMEText(text))
+
+        for f in files or []:
+            with open(f, "rb") as fil: 
+                ext = f.split('.')[-1:]
+                attachedfile = MIMEApplication(fil.read(), _subtype = ext)
+                attachedfile.add_header(
+                    'content-disposition', 'attachment', filename=basename(f) )
+            msg.attach(attachedfile)
+
+
+        smtp = smtplib.SMTP(host="smtp.gmail.com", port= 587) 
+        smtp.starttls()
+        smtp.login(username,password)
+        smtp.sendmail(send_from, send_to, msg.as_string())
+        smtp.close()
+
+        print("Pictures sent to:", send_to)
 
 # Creating Server
 class Server(Thread):
@@ -32,7 +73,7 @@ class Server(Thread):
 
     def run(self):
         server_socket = socket.socket()
-        server_socket.bind(('192.168.0.158', 8000)) 
+        server_socket.bind(('192.168.1.175', 8000)) 
         server_socket.listen(1)
 
         while True:
