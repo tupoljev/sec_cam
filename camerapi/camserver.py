@@ -11,6 +11,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from os.path import basename
+import glob
 
 class class1(tk.Tk):
 
@@ -36,10 +37,12 @@ class class1(tk.Tk):
         print("Server started...")
     
     def send_pictures(self):
-        send_from = username = 'soziparon@gmail.com'
+        send_from = 'soziparon@gmail.com'
         password = 'sze54mikro12'
         send_to = entr.get()
-        files = ['../pictures/picture.jpg']
+        
+        path = '../pictures/'
+        files = [f for f in glob.glob(path + "**/*.jpg", recursive=True)]
 
         msg = MIMEMultipart()
         msg['From'] = send_from
@@ -59,7 +62,7 @@ class class1(tk.Tk):
 
         smtp = smtplib.SMTP(host="smtp.gmail.com", port= 587) 
         smtp.starttls()
-        smtp.login(username,password)
+        smtp.login(send_from,password)
         smtp.sendmail(send_from, send_to, msg.as_string())
         smtp.close()
 
