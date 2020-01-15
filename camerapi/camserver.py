@@ -33,7 +33,7 @@ class class1(tk.Tk):
     # Starting server
     def start_server(self):
         server.daemon = True # Szerver bezárása a főszál (GUI) leállásakor
-        server.join()       # szál indítása
+        server.start()       # szál indítása
         print("Server started...")
         start_button = ttk.Button(self, text='Stop server', width=20, command=self.stop_server)
         start_button.grid(row=2, column=0, columnspan=1)
@@ -41,8 +41,6 @@ class class1(tk.Tk):
     def stop_server(self):
         server.join()
         print("Server stopped...")
-        start_button = ttk.Button(self, text='Start server', width=20, command=self.start_server)
-        start_button.grid(row=2, column=0, columnspan=1)    # Start server
     
     def send_pictures(self):
         send_from = 'test@gmail.com'
@@ -82,21 +80,19 @@ class Server(Thread):
         self.running = True # initial data value
         super().__init__()
         
-
     def join(self):
-        running = False
+        self.running = False
 
     def run(self):
         server_socket = socket.socket()
         server_socket.bind(('10.4.158.162', 8000)) 
         server_socket.listen(1)
-        self.running = True
         
-        while running:
+        while self.running:
             connection = server_socket.accept()[0].makefile('rb')
             try:
                 img = None
-                while True:
+                while self.running:
                     # Kép hosszának beolvasása 32-bit unsigned int ként.
                     # Ha ez 0, a program lépjen ki a ciklusból.
                     image_len = struct.unpack('<L', connection.read(struct.calcsize('<L')))[0]
