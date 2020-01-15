@@ -4,39 +4,38 @@ import struct
 import time
 import picamera
 
-# Client socket csatlakozása: my_server:8000-ra
+# Serverre csatlakozás a megadott porton keresztül (8000)
 client_socket = socket.socket()
-client_socket.connect(('192.168.0.158', 8000))
+client_socket.connect(('10.4.158.162', 8000))
 
-# Make a file-like object out of the connection
+# Fájl objektum létrehozása
 connection = client_socket.makefile('wb')
 try:
     camera = picamera.PiCamera()
     camera.resolution = (640, 480)
     camera.vflip = True
-    # preview indítása és 2 mp bemelegítés
+    # Preview létrehozása + 2 mp várakozás
     camera.start_preview()
     time.sleep(2)
 
-    # Start ideje + stream létrehozása a képadatok ideiglenes megtartásához
-    # (közvetlenül a kapcsolatba is beírhatnánk, de ebben az esetben
-    # először minden egyes capture méretét ki kéne találnunk a protocolhoz)
+    # Kezdési idő feljegyzése + stream készítése (kép adatainak mentése)
+    # ideiglenesen
     start = time.time()
     stream = io.BytesIO()
     for foo in camera.capture_continuous(stream, 'jpeg'):
-        # Capture hossza a streambe és flush
+        # Kód hosszának streambe írása + flush
         connection.write(struct.pack('<L', stream.tell()))
         connection.flush()
-        # Stream
+        # stream visszatekerése és a kép adatainak küldése
         stream.seek(0)
         connection.write(stream.read())
-        # Időzítő (adott mp után lépjünk ki
+        # Időzítő (ebben a példában 30 mp után leáll a közvetítés)
         #if time.time() - start > 30:
         #    break
-        # Reset the stream for the next capture
+        # stream resetelése a következő fényképhez
         stream.seek(0)
         stream.truncate()
-    # Zero hossza a streambe -> signal -> végeztünk
+    # "Jelzés" hogy végeztünk
     connection.write(struct.pack('<L', 0))
 finally:
     connection.close()

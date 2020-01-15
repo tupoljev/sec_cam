@@ -33,12 +33,20 @@ class class1(tk.Tk):
     # Starting server
     def start_server(self):
         server.daemon = True # Szerver bezárása a főszál (GUI) leállásakor
-        server.start()       # szál indítása
+        server.join()       # szál indítása
         print("Server started...")
+        start_button = ttk.Button(self, text='Stop server', width=20, command=self.stop_server)
+        start_button.grid(row=2, column=0, columnspan=1)
+
+    def stop_server(self):
+        server.join()
+        print("Server stopped...")
+        start_button = ttk.Button(self, text='Start server', width=20, command=self.start_server)
+        start_button.grid(row=2, column=0, columnspan=1)    # Start server
     
     def send_pictures(self):
-        send_from = 'soziparon@gmail.com'
-        password = 'sze54mikro12'
+        send_from = 'test@gmail.com'
+        password = 'jelszo'
         send_to = entr.get()
         
         path = '../pictures/'
@@ -71,15 +79,20 @@ class class1(tk.Tk):
 # Creating Server
 class Server(Thread):
     def __init__(self):
-        self.data = {} # initial data value
+        self.running = True # initial data value
         super().__init__()
+        
+
+    def join(self):
+        running = False
 
     def run(self):
         server_socket = socket.socket()
-        server_socket.bind(('192.168.1.175', 8000)) 
+        server_socket.bind(('10.4.158.162', 8000)) 
         server_socket.listen(1)
-
-        while True:
+        self.running = True
+        
+        while running:
             connection = server_socket.accept()[0].makefile('rb')
             try:
                 img = None
