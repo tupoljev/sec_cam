@@ -31,3 +31,7 @@ Szükség volt a matplotlib, valamint a Pillow modulok installálására is.
 Először a server.py fájlt kell elindítani azon a gépen, amelyen az élő képet szeretnénk megtekinteni. (python3 camserver.py)
 Ez a szerver létrehoz egy socket-et (IP cím + port), amelyen keresztül a kliens a későbbiekben csatlakozni tud.
 A kliens maga a Pi lesz ebben az esetben, az küldi a szerver számára az élő képet. (python3 camclient.py)
+Az élő kép, hogy ne ugráljon,képek egymás utáni sorozata. A Pillow modul alakítja a forráskódot vissza képpé.
+Email cím megadása esetén a pictures mappa tartalmát át lehet küldeni. Be lehet állítani, hogy milyen email címre és hogy melyik email címről küldje.
+
+ 
